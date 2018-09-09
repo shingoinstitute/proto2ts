@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+message Repeated {
+  repeated double double = 1;
+  repeated float float = 2;
+  repeated int32 int32 = 3;
+  repeated uint32 uint32 = 4;
+  repeated sint32 sint32 = 5;
+  repeated fixed32 fixed32 = 6;
+  repeated fixed32 sfixed32 = 7;
+  repeated int64 int64 = 8;
+  repeated uint64 uint64 = 9;
+  repeated sint64 sint64 = 10;
+  repeated fixed64 fixed64 = 11;
+  repeated sfixed64 sfixed64 = 12;
+  repeated bool bool = 13;
+  repeated string string = 14;
+  repeated bytes bytes = 15;
+}
+
+enum EnumAllowingAlias {
+  option allow_alias = true;
+  UNKNOWN = 0;
+  STARTED = 1;
+  RUNNING = 1;
+}
+
+enum Corpus {
+  UNIVERSAL = 0;
+  WEB = 1;
+  IMAGES = 2;
+  LOCAL = 3;
+  NEWS = 4;
+  PRODUCTS = 5;
+  VIDEO = 6;
+}
+
+message Enumerations {
+  string query = 1;
+  int32 page_number = 2;
+  int32 result_per_page = 3;
+  Corpus corpus = 4;
+  EnumAllowingAlias aliased = 5;
+}

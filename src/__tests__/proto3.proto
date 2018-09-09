@@ -1,0 +1,133 @@
+syntax = "proto3";
+
+package test;
+
+option java_multiple_files = true;
+option java_package = "org.shingo.proto";
+option java_outer_classname = "ProtoProto";
+
+service Service {
+  rpc ToLong(Number) returns (Long);
+  rpc StreamClient(stream Number) returns (Long);
+  rpc StreamServer(Number) returns (stream Long);
+  rpc BidiStream(stream Number) returns (stream Long);
+}
+
+message Number {
+  double double = 1;
+  float float = 2;
+  int32 int32 = 3;
+  uin32 uint32 = 4;
+  sint32 sint32 = 5;
+  fixed32 fixed32 = 6;
+  sfixed32 sfixed32 = 7;
+}
+
+message Long {
+  int64 int64 = 1;
+  uint64 uint64 = 2;
+  sint64 sint64 = 3;
+  fixed64 fixed64 = 4;
+  sfixed64 sfixed64 = 5;
+}
+
+message Bool {
+  bool bool = 1;
+}
+
+message String {
+  string string = 1;
+}
+
+message Bytes {
+  bytes bytes = 1;
+}
+
+message Repeated {
+  repeated double double = 1;
+  repeated float float = 2;
+  repeated int32 int32 = 3;
+  repeated uint32 uint32 = 4;
+  repeated sint32 sint32 = 5;
+  repeated fixed32 fixed32 = 6;
+  repeated fixed32 sfixed32 = 7;
+  repeated int64 int64 = 8;
+  repeated uint64 uint64 = 9;
+  repeated sint64 sint64 = 10;
+  repeated fixed64 fixed64 = 11;
+  repeated sfixed64 sfixed64 = 12;
+  repeated bool bool = 13;
+  repeated string string = 14;
+  repeated bytes bytes = 15;
+}
+
+message Enumerations {
+  string query = 1;
+  int32 page_number = 2;
+  int32 result_per_page = 3;
+  enum Corpus {
+    UNIVERSAL = 0;
+    WEB = 1;
+    IMAGES = 2;
+    LOCAL = 3;
+    NEWS = 4;
+    PRODUCTS = 5;
+    VIDEO = 6;
+  }
+  Corpus corpus = 4;
+  enum EnumAllowingAlias {
+    option allow_alias = true;
+    UNKNOWN = 0;
+    STARTED = 1;
+    RUNNING = 1;
+  }
+  EnumAllowingAlias aliased = 5;
+}
+
+message OtherMessageTypes {
+  repeated Result results = 1;
+}
+
+message Result {
+  string url = 1;
+  string title = 2;
+  repeated string snippets = 3;
+}
+
+message NestedTypes {
+  message Result {
+    string url = 1;
+    string title = 2;
+    repeated string snippets = 3;
+  }
+  repeated Result results = 1;
+}
+
+message DeepNestedTypes {
+  message Result {
+    message Res1 {
+      message Res2 {
+        string a = 1;
+      }
+      string a = 1;
+    }
+    string url = 1;
+    string title = 2;
+    repeated string snippets = 3;
+  }
+
+  repeated Result results = 1;
+  repeated Result.Res1 results2 = 2;
+  repeated Result.Res1.Res2 results3 = 3;
+}
+
+message OneOfs {
+  oneof test_oneof {
+    string name = 4;
+    SubMessage sub_message = 9;
+  }
+}
+
+message Maps {
+  map<string, Result> results = 3;
+}

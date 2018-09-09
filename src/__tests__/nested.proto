@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+message NestedTypes {
+  message Result {
+    string url = 1;
+    string title = 2;
+    repeated string snippets = 3;
+  }
+  repeated Result results = 1;
+}
+
+message DeepNestedTypes {
+  message Result {
+    message Res1 {
+      message Res2 {
+        string a = 1;
+      }
+      Res2 a = 1;
+    }
+    string url = 1;
+    string title = 2;
+    repeated string snippets = 3;
+  }
+
+  repeated Result results = 1;
+  repeated Result.Res1 results2 = 2;
+  repeated Result.Res1.Res2 results3 = 3;
+}

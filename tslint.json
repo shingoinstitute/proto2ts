@@ -1,0 +1,3 @@
+{
+  "extends": ["@shingo/tslint-rules", "tslint-config-prettier"]
+}

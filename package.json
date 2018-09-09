@@ -1,0 +1,108 @@
+{
+  "name": "@shingo/proto2ts",
+  "version": "1.0.0-beta.0",
+  "description": "Generates typescript interfaces from proto/grpc defintions",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "bin": {
+    "proto2ts": "cli.js"
+  },
+  "scripts": {
+    "test": "run-p build test:*",
+    "test:lint": "tslint --project .",
+    "test:unit": "node ./scripts/test.js",
+    "test:unit:watch": "node ./scripts/test.js --watch",
+    "test:security": "npm audit",
+    "build": "run-s clean && run-p build:*",
+    "build:main": "tsc -p tsconfig.json",
+    "fix": "run-s fix:*",
+    "fix:tslint": "tslint --fix --project ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shingoinstitute/proto2ts.git"
+  },
+  "keywords": [
+    "proto",
+    "typescript",
+    "grpc"
+  ],
+  "author": "Abraham White <abelincoln.white@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@shingo/tslint-rules": "^1.0.1",
+    "@types/common-tags": "^1.4.0",
+    "@types/jest": "^23.3.2",
+    "@types/node": "^10.9.4",
+    "jest": "^23.5.0",
+    "npm-run-all": "^4.1.3",
+    "prettier": "^1.14.2",
+    "ts-jest": "^23.1.4",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "tslint-config-prettier": "^1.15.0",
+    "typescript": "^3.0.3"
+  },
+  "dependencies": {
+    "common-tags": "^1.8.0",
+    "protobufjs": "~6.8.8"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "parser": "typescript"
+  },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.spec.json"
+      }
+    },
+    "coverageThreshold": {
+      "global": {
+        "branches": 95,
+        "functions": 95,
+        "lines": 95,
+        "statements": -15
+      }
+    },
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,mjs,ts,tsx}"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      ".*\\.d\\.ts",
+      "<rootDir>/src/(.*)?/__tests__/(.*)?\\.helper\\.ts",
+      "<rootDir>/src/(.*)?/__tests__/(.*)?__helper__(.*)"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "<rootDir>/src/(.*)?/__tests__/(.*)?\\.helper\\.ts",
+      "<rootDir>/src/(.*)?/__tests__/(.*)?__helper__(.*)"
+    ],
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/**/*.{js,jsx,mjs,ts,tsx}",
+      "<rootDir>/src/**/?(*.)(spec|test).{js,jsx,mjs,ts,tsx}"
+    ],
+    "testEnvironment": "node",
+    "testURL": "http://localhost",
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|ts|tsx)$"
+    ],
+    "moduleFileExtensions": [
+      "web.js",
+      "js",
+      "json",
+      "web.jsx",
+      "jsx",
+      "node",
+      "mjs",
+      "ts",
+      "tsx"
+    ]
+  }
+}
