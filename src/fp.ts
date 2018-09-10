@@ -101,3 +101,7 @@ export const zipWith = <A, B, C>(
  */
 export const zip = <A, B>(fa: A[], fb: B[]): Array<[A, B]> =>
   zipWith(fa, fb, tuple)
+
+export const flatten = <A>(fa: A[][]): A[] =>
+  fa.reduce((p, c) => [...p, ...c], [])
+export const split = (sequence: string) => (s: string) => s.split(sequence)

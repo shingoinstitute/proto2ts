@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+service Service {
+  rpc UnaryCall(IntValue) returns (DoubleValue);
+  rpc ClientStreamingCall(stream IntValue) returns (DoubleValue);
+  rpc ServerStreamingCall(IntValue) returns (stream DoubleValue);
+  rpc BidiStreamingCall(stream IntValue) returns (stream DoubleValue);
+}
+
+message IntValue {
+  int32 value = 1;
+}
+
+message DoubleValue {
+  double value = 1;
+}

@@ -6,19 +6,29 @@ import {
   Field,
   OneOf,
   Enum,
+  Method,
 } from 'protobufjs'
 import { html as ts } from 'common-tags'
-import { tuple } from './fp'
+import { tuple, flatten, split } from './fp'
 
 export interface GenOptions {
   package?: string
   syntax?: string
 }
 
+type Message = Type
+type TopLevelDefinition = Enum | Message | Service | Namespace
+// type MessageBody = Field | Enum | Message | OneOf
+
 export const entry = (parsed: IParserResult) => {
-  return parsed.root.nestedArray
-    .map(v => dispatcher(v as Namespace | Service | Type | Enum))
+  const result = parsed.root.nestedArray
+    .map(v => dispatcher(v as TopLevelDefinition))
     .join('\n')
+
+  return result.includes('grpc') &&
+    !result.includes("import * as grpc from 'grpc'")
+    ? `import * as grpc from 'grpc'\n\n${result}`
+    : result
 }
 
 const dispatcher = (
@@ -78,7 +88,79 @@ const parseNamespace = (n: Namespace): string => {
   }`
 }
 
-const parseService = (_s: Service): string => ''
+const parseService = (s: Service): string => {
+  const serverMethods = s.methodsArray.map(parseMethodServer)
+  const serverImpl = ts`
+    export interface ${s.name}Implementation {
+      ${serverMethods}
+    }
+  `
+  const clientMethods = s.methodsArray.map(parseMethodClient)
+  const clientImpl = ts`
+    export interface ${s.name}Client extends grpc.Client {
+      ${flatten(clientMethods.map(split('\n')))}
+    }
+  `
+
+  return `${serverImpl}\n${clientImpl}`
+}
+
+const parseMethodServer = (m: Method): string => {
+  const clientStreaming = !!m.requestStream
+  const serverStreaming = !!m.responseStream
+  const bidiStreaming = clientStreaming && serverStreaming
+  const { name, requestType, responseType } = m
+  const typeParam = `<${requestType}, ${responseType}>`
+  const methodType = bidiStreaming
+    ? `grpc.handleBidiStreamingCall`
+    : serverStreaming
+      ? `grpc.handleServerStreamingCall`
+      : clientStreaming
+        ? `grpc.handleClientStreamingCall`
+        : `grpc.handleUnaryCall`
+  return `${name}: ${methodType}${typeParam}`
+}
+
+const parseMethodClient = (m: Method): string => {
+  const clientStreaming = !!m.requestStream
+  const serverStreaming = !!m.responseStream
+  const bidiStreaming = clientStreaming && serverStreaming
+  const { name, requestType, responseType } = m
+  const returnType = bidiStreaming
+    ? `grpc.ClientDuplexStream<${requestType}, ${responseType}>`
+    : serverStreaming
+      ? `grpc.ClientReadableStream<${responseType}>`
+      : clientStreaming
+        ? `grpc.ClientWritableStream<${requestType}>`
+        : `grpc.ClientUnaryCall`
+  const params = bidiStreaming
+    ? [
+        'options?: grpc.CallOptions | null',
+        'metadata?: grpc.Metadata | null, options?: grpc.CallOptions | null',
+      ]
+    : serverStreaming
+      ? [
+          `argument: ${requestType}, options?: grpc.CallOptions | null`,
+          `argument: ${requestType}, metadata?: grpc.Metadata | null, options?: grpc.CallOptions | null`,
+        ]
+      : clientStreaming
+        ? [
+            `callback: grpc.requestCallback<${responseType}>`,
+            `options: grpc.CallOptions | null, callback: grpc.requestCallback<${responseType}>`,
+            `metadata: grpc.Metadata | null, callback: grpc.requestCallback<${responseType}>`,
+            `metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<${responseType}>`,
+          ]
+        : [
+            `argument: ${requestType}, callback: grpc.requestCallback<${responseType}>`,
+            `argument: ${requestType}, options: grpc.CallOptions | null, callback: grpc.requestCallback<${responseType}>`,
+            `argument: ${requestType}, metadata: grpc.Metadata | null, callback: grpc.requestCallback<${responseType}>`,
+            `argument: ${requestType}, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<${responseType}>`,
+          ]
+  const overloads = params.map(
+    paramList => `${name}(${paramList}): ${returnType}`,
+  )
+  return overloads.join('\n')
+}
 
 const parseType = (t: Type): string => {
   const fields = t.fieldsArray.map(dispatcher)
