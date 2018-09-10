@@ -1,6 +1,5 @@
 import {
   IParserResult,
-  Root,
   Namespace,
   Service,
   Type,
@@ -23,7 +22,7 @@ export const entry = (parsed: IParserResult) => {
 }
 
 const dispatcher = (
-  obj: Namespace | Service | Type | Field | OneOf | Enum
+  obj: Namespace | Service | Type | Field | OneOf | Enum,
 ): string => {
   if (obj instanceof Enum) return parseEnum(obj)
   if (obj instanceof OneOf) return parseOneof(obj)
@@ -38,7 +37,7 @@ const dispatcher = (
 const typeMapper = (
   type: string,
   specialType?: 'long' | 'bytes',
-  options: { useLong?: boolean; useBuffer?: boolean } = {}
+  options: { useLong?: boolean; useBuffer?: boolean } = {},
 ) => {
   if (specialType === 'long') return options.useLong ? 'Long' : 'string'
   if (specialType === 'bytes') return options.useBuffer ? 'Buffer' : 'string'
@@ -114,7 +113,7 @@ const parseField = (f: Field) => {
   const type = repeated
     ? `Array<${typeQualifier ? typeQualifier + '.' : ''}${typeMapper(
         f.type,
-        specialType
+        specialType,
       )}>`
     : (typeQualifier ? typeQualifier + '.' : '') +
       typeMapper(f.type, specialType)

@@ -28,7 +28,7 @@ export interface Args {
 }
 
 const getArgs = (): Args => {
-  const [_execPath, _jsFile, ...args] = process.argv
+  const [, , ...args] = process.argv
   if (args.length === 0) return { files: [process.stdin] }
   return { files: args }
 }

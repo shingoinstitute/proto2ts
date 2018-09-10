@@ -32,7 +32,7 @@ describe('primitives.proto', () => {
         export interface Bytes {
           bytes?: string
         }
-      `
+      `,
     )
   })
 
@@ -79,7 +79,7 @@ describe('primitives.proto', () => {
           corpus?: Corpus
           aliased?: EnumAllowingAlias
         }
-      `
+      `,
     )
   })
 
@@ -120,7 +120,7 @@ describe('primitives.proto', () => {
             }
           }
         }
-      `
+      `,
     )
   })
 })
